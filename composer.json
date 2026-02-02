@@ -1,0 +1,22 @@
+{
+    "name": "next-tech/moonshine-lunar-chat",
+    "description": "Chat UI components for MoonShine 4",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "NextTech\\MoonShineLunarChat\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^8.4",
+        "moonshine/moonshine": "^4.0"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "NextTech\\MoonShineLunarChat\\Providers\\LunarChatServiceProvider"
+            ]
+        }
+    }
+}

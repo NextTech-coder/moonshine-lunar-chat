@@ -1,0 +1,32 @@
+.ms-chat {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+.ms-chat--mine {
+    flex-direction: row-reverse;
+}
+.ms-chat__avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+.ms-chat__bubble {
+    background: #f1f5f9;
+    padding: 8px 12px;
+    border-radius: 12px;
+    max-width: 60%;
+}
+.ms-chat--mine .ms-chat__bubble {
+    background: #3b82f6;
+    color: white;
+}
+.ms-chat__author {
+    font-size: 12px;
+    opacity: 0.7;
+}
+.ms-chat__time {
+    font-size: 10px;
+    opacity: 0.5;
+    text-align: right;
+}
