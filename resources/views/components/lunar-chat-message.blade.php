@@ -1,89 +1,91 @@
 @props([
-    'mine' => false,
+    'sent' => false,
     'avatar' => null,
     'author' => null,
-    'text' => '',
+    'blocks' => [],
     'time' => null,
 ])
 
-<div class="flex items-end gap-3 {{ $mine ? 'justify-end' : '' }} mb-4 animate-fade-in">
-    @if (!$mine && $avatar)
-        <img src="{{ $avatar }}" alt="{{ $author }}"
-            class="w-10 h-10 rounded-full ring-2 flex-shrink-0 shadow-md"
-            style="ring-color: var(--primary-rgb, rgba(120, 67, 230, 0.2));">
+<div class="flex items-end gap-3 mb-4 {{ $sent ? 'justify-end' : '' }}">
+    @if (!$sent && $avatar)
+        <x-moonshine-chat::lunar-avatar :avatar="$avatar" :alt="$author" />
     @endif
 
-    <div class="flex flex-col {{ $mine ? 'items-end' : 'items-start' }} max-w-[70%]">
+    <div class="flex flex-col {{ $sent ? 'items-end' : 'items-start' }} max-w-[70%]">
         @if ($author)
-            <span class="text-xs mb-1 {{ $mine ? 'mr-3' : 'ml-3' }} font-medium"
-                style="color: var(--secondary-color, rgba(156, 163, 175, 1));">
+            <div class="text-xs text-gray-500 mb-1 px-3">
                 {{ $author }}
-            </span>
+            </div>
         @endif
 
-        <div class="relative group">
-            <div class="chat-message-bubble {{ $mine ? 'chat-message-mine' : 'chat-message-other' }}">
-                <p class="text-sm leading-relaxed break-words">{{ $text }}</p>
-            </div>
+        @foreach ($blocks as $block)
+            @switch($block['type'])
+                @case('paragraph')
+                    @foreach ($block['contents'] as $text)
+                        <div class="chat-bubble {{ $sent ? 'chat-bubble--sent' : 'chat-bubble--other' }}">
+                            {{ $text }}
+                        </div>
+                    @endforeach
+                @break
+            @endswitch
+        @endforeach
 
-            @if ($time)
-                <span class="text-xs mt-1 {{ $mine ? 'mr-3' : 'ml-3' }} block"
-                    style="color: var(--secondary-color, rgba(107, 114, 128, 1));">
-                    {{ $time }}
-                </span>
-            @endif
-        </div>
+        @if ($time)
+            <div class="text-xs text-gray-400 mt-1 px-3">
+                {{ $time }}
+            </div>
+        @endif
     </div>
 
-    @if ($mine && $avatar)
-        <img src="{{ $avatar }}" alt="{{ $author }}"
-            class="w-10 h-10 rounded-full ring-2 flex-shrink-0 shadow-md"
-            style="ring-color: var(--primary-rgb, rgba(120, 67, 230, 0.2));">
+    @if ($sent && $avatar)
+        <x-moonshine-chat::lunar-avatar :avatar="$avatar" :alt="$author" />
     @endif
 </div>
 
 @once
     <style>
-        @keyframes fade-in {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .animate-fade-in {
-            animation: fade-in 0.3s ease-out;
-        }
-
-        .chat-message-bubble {
-            color: white;
-            border-radius: 1rem;
+        .chat-bubble {
+            position: relative;
             padding: 0.75rem 1rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s;
-            backdrop-filter: blur(4px);
+            border-radius: 1rem;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            max-width: 100%;
+            margin-bottom: 5px;
+
+            background: var(--color-base-100);
+            color: var(--color-base-text);
+            border: 1px solid var(--color-base-stroke);
         }
 
-        .chat-message-mine {
-            background: var(--primary-color, linear-gradient(135deg, #7843e6 0%, #6d28d9 100%));
-            border-bottom-right-radius: 0.25rem;
-            box-shadow: 0 4px 6px -1px var(--primary-rgb, rgba(120, 67, 230, 0.2));
+        .chat-bubble--sent {
+            background: var(--color-primary);
+            color: var(--color-primary-text);
+            border-bottom-right-radius: 0.35rem;
         }
 
-        .chat-message-other {
-            background: linear-gradient(135deg, #9333ea 0%, #7e22ce 100%);
-            border-bottom-left-radius: 0.25rem;
-            box-shadow: 0 4px 6px -1px rgba(147, 51, 234, 0.3);
+        .chat-bubble--sent.chat-bubble--last::after {
+            content: '';
+            position: absolute;
+            right: -6px;
+            bottom: 10px;
+            border-left: 6px solid var(--color-primary);
+            border-top: 6px solid transparent;
+            border-bottom: 6px solid transparent;
         }
 
-        .chat-message-bubble:hover {
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
-            transform: translateY(-1px);
+        .chat-bubble--other {
+            background: var(--color-base);
+        }
+
+        .chat-bubble--other.chat-bubble--last::before {
+            content: '';
+            position: absolute;
+            left: -6px;
+            bottom: 10px;
+            border-right: 6px solid var(--color-base-stroke);
+            border-top: 6px solid transparent;
+            border-bottom: 6px solid transparent;
         }
     </style>
 @endonce

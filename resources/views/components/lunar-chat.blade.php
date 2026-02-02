@@ -1,3 +1,7 @@
+@props([
+    'messages' => [],
+])
+
 <x-moonshine::layout>
     <x-moonshine::layout.content>
         <x-moonshine::card>
@@ -10,19 +14,17 @@
             </div>
 
             <div class="space-y-4 mb-6 max-h-[600px] overflow-y-auto pr-2">
-                <x-moonshine-chat::lunar-chat-message :avatar="'https://i.pravatar.cc/150?img=5'" author="Jane" text="doing fine, how r you?"
-                    time="4 minutes ago" />
 
-                <x-moonshine-chat::lunar-chat-message :mine="true" :avatar="'https://i.pravatar.cc/150?img=12'" author="me"
-                    text="hey, how are you?" time="7 minutes ago" />
+                @if ($messages)
+                    @foreach ($messages as $index => $message)
+                        <x-moonshine-chat::lunar-chat-message :sent="$message['sent']" :avatar="$message['avatar']" :author="$message['author']"
+                            :blocks="$message['blocks']" :time="$message['time']" :is-last="$index === count($messages) - 1" />
+                    @endforeach
+                @else
+                    Начините новый чат!!!!
+                @endif
 
-                <x-moonshine-chat::lunar-chat-message :avatar="'https://i.pravatar.cc/150?img=5'" author="Jane"
-                    text="I've been working on this new project with MoonShine and Tailwind. The combination is really powerful! 🚀"
-                    time="2 minutes ago" />
 
-                <x-moonshine-chat::lunar-chat-message :mine="true" :avatar="'https://i.pravatar.cc/150?img=12'" author="me"
-                    text="That sounds amazing! I'd love to see what you've built. Could you share some screenshots?"
-                    time="just now" />
             </div>
 
             <form method="POST" class="w-full flex gap-2 items-center">
