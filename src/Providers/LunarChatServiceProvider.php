@@ -13,13 +13,5 @@ final class LunarChatServiceProvider extends ServiceProvider
     public function boot(AssetManagerContract $asset): void
     {
         $this->loadViewsFrom(__DIR__.'/../../resources/views', 'moonshine-chat');
-
-        $this->publishes([
-            __DIR__.'/../../resources/js' => public_path('vendor/moonshine-lunar-chat/js'),
-        ], 'moonshine-lunar-chat-assets');
-
-        $asset->add([
-            Js::make('vendor/moonshine-lunar-chat/js/lunar-chat.js')
-        ]);
     }
 }
