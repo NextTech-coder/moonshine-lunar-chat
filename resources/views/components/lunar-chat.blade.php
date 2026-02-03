@@ -13,12 +13,22 @@
                 </x-moonshine::title>
             </div>
 
-            <div class="space-y-4 mb-6 max-h-[600px] overflow-y-auto pr-2">
+            <div
+                x-data="lunarChat()"
+                x-ref="messagesContainer"
+                style="max-height: 500px; overflow-y: auto;"
+                class="space-y-4 mb-6 pr-2"
+            >
 
                 @if ($messages)
                     @foreach ($messages as $index => $message)
-                        <x-moonshine-chat::lunar-chat-message :sent="$message['sent']" :avatar="$message['avatar']" :author="$message['author']"
-                            :blocks="$message['blocks']" :time="$message['time']" :is-last="$index === count($messages) - 1" />
+                        <x-moonshine-chat::lunar-chat-message
+                            :sent="$message['sent']"
+                            :avatar="$message['avatar']"
+                            :author="$message['author']"
+                            :blocks="$message['blocks']"
+                            :time="$message['time']"
+                        />
                     @endforeach
                 @else
                     Начините новый чат!!!!
@@ -40,3 +50,17 @@
         </x-moonshine::card>
     </x-moonshine::layout.content>
 </x-moonshine::layout>
+
+@pushonce('scripts')
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('lunarChat', () => ({
+                init() {
+                    this.$nextTick(() => {
+                        this.$refs.messagesContainer.scrollTop = this.$refs.messagesContainer.scrollHeight;
+                    });
+                }
+            }));
+        });
+    </script>
+@endpushonce
