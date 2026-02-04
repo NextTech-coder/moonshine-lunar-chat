@@ -169,9 +169,11 @@
                         throw new Error('Request failed')
                     }
 
-                    const data = await response.json();
-                    this.messages = data.messages;
+                    const message = await response.json();
+
+                    this.messages.push(message);
                     this.clientMessage = '';
+
                     this.scrollToBottom();
                 } catch (e) {
                     console.error(e)
