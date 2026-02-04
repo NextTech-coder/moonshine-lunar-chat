@@ -13,7 +13,7 @@
 
     <div class="flex flex-col {{ $sent ? 'items-end' : 'items-start' }} max-w-[70%]">
         @if ($author)
-            <div class="text-xs text-gray-500 mb-1 px-3">
+            <div class="text-xs text-gray-500 mb-2 px-3">
                 {{ $author }}
             </div>
         @endif

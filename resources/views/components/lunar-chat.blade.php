@@ -20,20 +20,23 @@
                 class="space-y-4 mb-6 pr-2"
             >
 
-                @if ($messages)
-                    @foreach ($messages as $index => $message)
+                @forelse ($messages as $message)
+                    @if (!empty($message['label'] ?? null))
+                        <x-moonshine::title :h="2" class="text-center">
+                            {{ $message['label'] }}
+                        </x-moonshine::title>
+                    @else
                         <x-moonshine-chat::lunar-chat-message
-                            :sent="$message['sent']"
-                            :avatar="$message['avatar']"
-                            :author="$message['author']"
-                            :blocks="$message['blocks']"
-                            :time="$message['time']"
+                            :sent="$message['sent'] ?? false"
+                            :avatar="$message['avatar'] ?? null"
+                            :author="$message['author'] ?? null"
+                            :blocks="$message['blocks'] ?? []"
+                            :time="$message['time'] ?? null"
                         />
-                    @endforeach
-                @else
-                    Начините новый чат!!!!
-                @endif
-
+                    @endif
+                @empty
+                    Начните новый чат!!!!
+                @endforelse
 
             </div>
 
