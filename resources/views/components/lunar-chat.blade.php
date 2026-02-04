@@ -40,12 +40,12 @@
 
             </div>
 
-            <form method="POST" class="w-full flex gap-2 items-center">
+            <form method="POST" action="{{ $action  }}" class="w-full flex gap-2 items-center">
                 @csrf
                 <x-moonshine::form.textarea name="message" rows="1" placeholder="Введите сообщение..." autosize
                     class="flex-1" />
 
-                <x-moonshine::form.button>
+                <x-moonshine::form.button type="submit">
                     <x-moonshine::icon icon='paper-airplane' />
                 </x-moonshine::form.button>
             </form>
