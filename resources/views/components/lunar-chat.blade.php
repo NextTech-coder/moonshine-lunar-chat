@@ -1,18 +1,21 @@
-<x-moonshine::card x-data="lunarChat({
-    channel: '{{ $channel }}',
-    isPrivate: {{ $isPrivate ? 'true' : 'false' }},
-    messages: {!! @json_encode($messages) !!}
-    userId: {{ auth()->id() }}
-})">
+@props([
+    'messages' => [],
+    'isPrivate' => false,
+    'channel' => null,
+    'title' => '',
+    'placeholder' => '',
+])
 
-    <div class="text-2xl font-bold mb-6 text-white flex items-center gap-3">
+<x-moonshine::card x-data="lunarChat()">
+
+<div class="text-2xl font-bold mb-6 text-white flex items-center gap-3">
         <x-moonshine::icon icon='chat-bubble-left-right' />
         <x-moonshine::title>
-            Чат
+            {{ $title }}
         </x-moonshine::title>
     </div>
 
-    <div x-ref="messagesContainer" style="height:500px; overflow-y:auto;" class="space-y-4 mb-6 pr-2">
+    <div x-ref="messagesContainer" style="height:100vh; overflow-y:auto;" class="space-y-4 mb-6 pr-2">
         <template x-for="(message, index) in messages" :key="index">
             <div :data-message-id="message.id">
                 <template x-if="message.label">
@@ -68,7 +71,7 @@
             x-model="clientMessage"
             name="clientMessage"
             rows="1"
-            placeholder="Введите сообщение..."
+            placeholder="{{ $placeholder }}"
             autosize
             class="flex-1"
         />
@@ -157,3 +160,120 @@
         }
     }
 </style>
+
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('lunarChat', () => ({
+            sending: false,
+            clientMessage: '',
+            messages: {!! @json_encode($messages) !!},
+            channel: '{{ $channel ?? "" }}',
+            isPrivate: {{ !empty($isPrivate) ? 'true' : 'false' }},
+            userId: {{ auth()->id() ?? 'null' }},
+            echoInstance: null,
+            lastMessageId: null,
+
+            init() {
+                this.setupEcho();
+                this.$nextTick(() => {
+                    this.scrollToBottom();
+                });
+            },
+
+            setupEcho() {
+                window.Echo = new Echo({
+                    broadcaster: 'reverb',
+                    key: 'b18j2owqken8yl38jz7d',
+                    wsHost: '127.0.0.1',
+                    wsPort: 6001 ?? 80,
+                    wssPort: 6001 ?? 443,
+                    forceTLS: ('http' ?? 'https') === 'https',
+                    enabledTransports: ['ws', 'wss'],
+                });
+
+                if (typeof window.Echo !== 'undefined') {
+                    this.subscribe()
+                }
+            },
+
+            subscribe() {
+                const channelName = this.isPrivate ? `private-${this.channel}` : this.channel;
+
+                this.echoInstance = this.isPrivate ? window.Echo.private(channelName) : window.Echo.channel(channelName);
+
+                this.echoInstance.listen('.chat.message.received', (message) => {
+                    if (message.sent && message.author_id === this.userId) {
+                        return;
+                    }
+
+                    this.handleIncomingMessage(message);
+                });
+            },
+
+            handleIncomingMessage(message) {
+                message.id = Date.now() + Math.random();
+                this.messages.push(message);
+
+                this.$nextTick(() => {
+                    const lastMsg = this.$el.querySelector(`[data-message-id="${message.id}"]`);
+
+                    if (lastMsg) {
+                        lastMsg.classList.add('message-enter');
+
+                        setTimeout(() => {
+                            lastMsg.classList.add('message-enter-active');
+                        }, 10);
+
+                        setTimeout(() => {
+                            lastMsg.classList.remove('message-enter', 'message-enter-active');
+                        }, 400);
+                    }
+
+                    this.scrollToBottom();
+                });
+            },
+
+            scrollToBottom() {
+                this.$nextTick(() => {
+                    this.$refs.messagesContainer.scrollTop = this.$refs.messagesContainer.scrollHeight;
+                });
+            },
+
+            async sendMessage() {
+                if (!this.clientMessage.trim() || this.sending) {
+                    return
+                }
+
+                this.sending = true
+
+                try {
+                    const response = await fetch('{{ $action }}', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ message: this.clientMessage }),
+                    })
+
+                    if (!response.ok) {
+                        throw new Error('Request failed')
+                    }
+
+                    const message = await response.json();
+
+                    this.messages.push(message);
+                    this.clientMessage = '';
+
+                    this.scrollToBottom();
+                } catch (e) {
+                    console.error(e)
+                } finally {
+                    this.sending = false
+                }
+            },
+        }));
+    });
+
+</script>

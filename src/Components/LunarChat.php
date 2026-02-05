@@ -8,8 +8,10 @@ use MoonShine\UI\Components\MoonShineComponent;
 
 final class LunarChat extends MoonShineComponent
 {
-    public ?string $action = null;
-    public ?string $channel = null;
+    protected string $title = '';
+    protected string $placeholder = '';
+    protected ?string $action = null;
+    protected ?string $channel = null;
     public bool $isPrivate = false;
 
     protected string $view = 'moonshine-chat::components.lunar-chat';
@@ -41,6 +43,18 @@ final class LunarChat extends MoonShineComponent
         return $this;
     }
 
+    public function setTitle(string $title): self
+    {
+        $this->title = $title;
+        return $this;
+    }
+
+    public function setPlaceholder(string $placeholder): self
+    {
+        $this->placeholder = $placeholder;
+        return $this;
+    }
+
     protected function viewData(): array
     {
         return [
@@ -48,6 +62,8 @@ final class LunarChat extends MoonShineComponent
             'channel' => $this->channel,
             'isPrivate' => $this->isPrivate,
             'action' => $this->action,
+            'title' => $this->title,
+            'placeholder' => $this->placeholder,
         ];
     }
 }
