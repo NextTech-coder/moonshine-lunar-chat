@@ -1,8 +1,9 @@
-@props([
-    'messages' => [],
-])
-
-<x-moonshine::card x-data="lunarChat()">
+<x-moonshine::card x-data="lunarChat({
+    channel: '{{ $channel }}',
+    isPrivate: {{ $isPrivate ? 'true' : 'false' }},
+    messages: {!! @json_encode($messages) !!}
+    userId: {{ auth()->id() }}
+})">
 
     <div class="text-2xl font-bold mb-6 text-white flex items-center gap-3">
         <x-moonshine::icon icon='chat-bubble-left-right' />
@@ -11,9 +12,9 @@
         </x-moonshine::title>
     </div>
 
-    <div x-ref="messagesContainer" style="max-height:500px; overflow-y:auto;" class="space-y-4 mb-6 pr-2">
+    <div x-ref="messagesContainer" style="height:500px; overflow-y:auto;" class="space-y-4 mb-6 pr-2">
         <template x-for="(message, index) in messages" :key="index">
-            <div>
+            <div :data-message-id="message.id">
                 <template x-if="message.label">
                     <x-moonshine::title :h="4" class="text-center" x-text="message.label"></x-moonshine::title>
                 </template>
@@ -55,6 +56,7 @@
             </div>
         </template>
     </div>
+
 
 
     <form
@@ -126,61 +128,32 @@
         border-top: 6px solid transparent;
         border-bottom: 6px solid transparent;
     }
+
+    .chat-new-message {
+        animation: pulse 1.5s infinite;
+    }
+
+    .message-enter {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    .message-enter-active {
+        opacity: 1;
+        transform: translateY(0);
+        transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+
+    .chat-new-message {
+        animation: messagePulse 1.5s ease-in-out;
+    }
+
+    @keyframes messagePulse {
+        0%, 100% {
+            box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+        }
+        50% {
+            box-shadow: 0 0 0 8px rgba(59, 130, 246, 0.15);
+        }
+    }
 </style>
-
-<script>
-    document.addEventListener('alpine:init', () => {
-        Alpine.data('lunarChat', () => ({
-            sending: false,
-            clientMessage: '',
-            messages: {!! @json_encode($messages) !!},
-
-            init() {
-                this.$nextTick(() => {
-                    this.scrollToBottom();
-                });
-            },
-
-            scrollToBottom() {
-                this.$nextTick(() => {
-                    this.$refs.messagesContainer.scrollTop = this.$refs.messagesContainer.scrollHeight;
-                });
-            },
-
-            async sendMessage() {
-                if (!this.clientMessage.trim() || this.sending) {
-                    return
-                }
-
-                this.sending = true
-
-                try {
-                    const response = await fetch('{{ $action }}', {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ message: this.clientMessage }),
-                    })
-
-                    if (!response.ok) {
-                        throw new Error('Request failed')
-                    }
-
-                    const message = await response.json();
-
-                    this.messages.push(message);
-                    this.clientMessage = '';
-
-                    this.scrollToBottom();
-                } catch (e) {
-                    console.error(e)
-                } finally {
-                    this.sending = false
-                }
-            },
-        }));
-    });
-</script>
