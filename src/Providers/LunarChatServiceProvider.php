@@ -14,9 +14,9 @@ final class LunarChatServiceProvider extends ServiceProvider
     {
         $this->loadViewsFrom(__DIR__.'/../../resources/views', 'moonshine-chat');
 
-        moonshineAssets()->add([
-            Js::make('https://cdn.jsdelivr.net/npm/pusher-js@8.4.0/dist/web/pusher.min.js'),
-            Js::make('https://cdn.jsdelivr.net/npm/laravel-echo@1.16.1/dist/echo.iife.js'),
-        ]);
+
+        $this->publishes([
+            __DIR__ . '/../../public' => public_path('vendor/moonshine-lunar-chat'),
+        ], ['moonshine-lunar-chat-assets']);
     }
 }
