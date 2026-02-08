@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace NextTech\MoonShineLunarChat\DataTransferObject;
 
-final readonly class ChatBlock
+final readonly class ChatBlockObject
 {
     /**
      * @param list<string> $contents

@@ -7,37 +7,56 @@ namespace NextTech\MoonShineLunarChat\Components;
 use MoonShine\AssetManager\Css;
 use MoonShine\AssetManager\Js;
 use MoonShine\UI\Components\MoonShineComponent;
+use NextTech\MoonShineLunarChat\Collections\ChatMessageCollection;
 
 final class LunarChat extends MoonShineComponent
 {
-    protected string $title = '';
-    protected string $placeholder = '';
-    protected ?string $action = null;
-    protected ?string $channel = null;
+    protected string $view = 'moonshine-chat::components.lunar-chat';
     public bool $isPrivate = false;
+    protected ?string $action = null;
+    protected ?array $websocket = null;
     protected ?int $userId = null;
 
-    protected string $view = 'moonshine-chat::components.lunar-chat';
+    protected ChatMessageCollection $messages;
 
     public function __construct(
-        public array $messages = [],
+        public string $title = '',
+        public string $placeholder = ''
     ) {
         $this->userId = auth()->id();
+        $this->messages = new ChatMessageCollection();
 
         parent::__construct();
     }
 
+    /**
+     * @param \NextTech\MoonShineLunarChat\Collections\ChatMessageCollection $messages
+     *
+     * @return \NextTech\MoonShineLunarChat\Components\LunarChat
+     */
+    public function messages(ChatMessageCollection $messages): self
+    {
+        $this->messages = $messages;
+
+        return $this;
+    }
+
+    /**
+     * @return array|\MoonShine\Contracts\AssetManager\AssetElementContract[]
+     */
     public function assets(): array
     {
         return [
             Css::make('/vendor/moonshine-lunar-chat/css/lunar-chat.css'),
             Js::make('/vendor/moonshine-lunar-chat/js/lunar-chat.js'),
-
-            Js::make('https://cdn.jsdelivr.net/npm/pusher-js@8.4.0/dist/web/pusher.min.js'),
-            Js::make('https://cdn.jsdelivr.net/npm/laravel-echo@1.16.1/dist/echo.iife.js'),
         ];
     }
 
+    /**
+     * @param string $name
+     *
+     * @return $this
+     */
     public function action(string $name): self
     {
         $this->action = $name;
@@ -45,13 +64,25 @@ final class LunarChat extends MoonShineComponent
         return $this;
     }
 
-    public function channel(string $name): self
+    /**
+     * @param string $channel
+     * @param string $listen
+     *
+     * @return $this
+     */
+    public function websocket(string $channel, string $listen): self
     {
-        $this->channel = $name;
+        $this->websocket = [
+            'channel' => $channel,
+            'listen' => $listen,
+        ];
 
         return $this;
     }
 
+    /**
+     * @return $this
+     */
     public function private(): self
     {
         $this->isPrivate = true;
@@ -59,20 +90,11 @@ final class LunarChat extends MoonShineComponent
         return $this;
     }
 
-    public function setTitle(string $title): self
-    {
-        $this->title = $title;
-
-        return $this;
-    }
-
-    public function setPlaceholder(string $placeholder): self
-    {
-        $this->placeholder = $placeholder;
-
-        return $this;
-    }
-
+    /**
+     * @param int $id
+     *
+     * @return $this
+     */
     public function user(int $id): self
     {
         $this->userId = $id;
@@ -80,13 +102,16 @@ final class LunarChat extends MoonShineComponent
         return $this;
     }
 
+    /**
+     * @return array
+     */
     protected function viewData(): array
     {
         return [
             'action' => $this->action,
-            'channel' => $this->channel,
+            'websocket' => $this->websocket,
             'isPrivate' => $this->isPrivate,
-            'messages' => $this->messages,
+            'messages' => $this->messages->toArray(),
             'placeholder' => $this->placeholder,
             'title' => $this->title,
             'userId' => $this->userId,

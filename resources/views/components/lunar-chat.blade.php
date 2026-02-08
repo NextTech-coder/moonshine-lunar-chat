@@ -1,16 +1,17 @@
 @props([
-    'channel' => null,
+    'websocket' => null,
     'isPrivate' => false,
     'messages' => [],
     'placeholder' => '',
     'title' => '',
     'userId' => null,
+    'action' => null,
 ])
 
 <x-moonshine::card
     x-data="lunarChat($el.dataset)"
     data-action="{{ $action }}"
-    data-channel="{{ $channel }}"
+    data-websocket="{{ json_encode($websocket) }}"
     data-messages='{{ json_encode($messages) }}'
     data-private="{{ $isPrivate }}"
     data-user-id="{{ $userId }}"

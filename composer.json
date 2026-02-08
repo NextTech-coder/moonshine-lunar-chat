@@ -6,18 +6,30 @@
     "authors": [
         {
             "name": "Oleg Danilyuk",
-            "email": "danilyuk_oleg@vk.com"
+            "email": "danilyuk_oleg@vk.com",
+            "homepage": "https://github.com/NextTech-coder"
         }
     ],
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "autoload": {
         "psr-4": {
             "NextTech\\MoonShineLunarChat\\": "src/"
         }
     },
     "require": {
-        "php": "^8.4",
+        "php": "^8.2"
+    },
+    "version": "1.0.0",
+    "require-dev": {
         "moonshine/moonshine": "^4.0"
+    },
+    "conflict": {
+        "moonshine/moonshine": "<4.0"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "MoonShine\\": "vendor/moonshine/moonshine/"
+        }
     },
     "extra": {
         "laravel": {
