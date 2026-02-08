@@ -19,7 +19,6 @@
     "require": {
         "php": "^8.2"
     },
-    "version": "1.0.0",
     "require-dev": {
         "moonshine/moonshine": "^4.0"
     },
