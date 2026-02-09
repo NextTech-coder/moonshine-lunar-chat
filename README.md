@@ -1,4 +1,4 @@
-![LunarChat](https://banners.beyondco.de/lunar%20Chat.png?theme=dark&packageManager=composer+require&packageName=nexttech%2Fmoonshine-lunar-chat&pattern=flippedDiamonds&style=style_1&description=+Chat+UI+components+for+Moonshine+4+&md=1&showWatermark=0&fontSize=100px&images=moon)
+![LunarChat](https://banners.beyondco.de/Lunar%20Chat.png?theme=dark&packageManager=composer+require&packageName=next-tech%2Fmoonshine-lunar-chat&pattern=architect&style=style_1&description=Chat+UI+components+for+Moonshine+4&md=1&showWatermark=0&fontSize=100px&images=moon)
 
 ## About
 
@@ -36,7 +36,7 @@ Lunar Chat is a chat UI component for MoonShine 4 that allows you to display cha
 ## Install
 
 ```shell
-composer require nexttech/moonshine-lunar-chat
+composer require next-tech/moonshine-lunar-chat
 ```
 ### Publish assets (JS & CSS):
 
